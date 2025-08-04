@@ -94,7 +94,7 @@
         </div>
 
         <!-- Tarjeta de Resultados -->
-        <div id="resultadoWrapper" class="mt-8 border border-gray-700 rounded-xl p-6 bg-gray-800/50 min-h-[250px] hidden">
+        <div id="resultadoWrapper" class="mt-8 border border-gray-700 rounded-xl p-6 bg-gray-800/50 min-h-[350px] hidden">
             <h3 class="text-center text-blue-400 font-bold mb-4 tracking-widest" id="resultadoTitulo">INFORMACIÓN</h3>
             <div id="resultadoContenido" class="space-y-2">
                 <!-- El contenido se inyectará aquí -->
@@ -197,9 +197,13 @@
                         html += createResultItem('Número de documento', info.number || 'N/A');
                         html += createResultItem('Nombre completo', info.full_name || 'N/A');
                         html += createResultItem('Fecha Nacimiento', info.date_of_birth || 'N/A');
-                        html += createResultItem('Departamento', info.department || 'N/A');
-                        html += createResultItem('Provincia', info.province || 'N/A');
+                        html += createResultItem('Sexo', 'No disponible'); // Dato no provisto por la API
+                        html += createResultItem('Código de verificación', 'No disponible'); // Dato no provisto por la API
+                        html += createResultItem('Dirección', info.address || 'N/A');
                         html += createResultItem('Distrito', info.district || 'N/A');
+                        html += createResultItem('Provincia', info.province || 'N/A');
+                        html += createResultItem('Departamento', info.department || 'N/A');
+                        html += createResultItem('Ubigeo', info.ubigeo || 'N/A');
                     } else if (tipoDoc === 'ruc') {
                         html += createResultItem('Número de RUC', info.number || 'N/A');
                         html += createResultItem('Razón Social', info.name || 'N/A');
