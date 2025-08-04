@@ -48,7 +48,7 @@
                         Consultar DNI <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
                 </div>
-                <div id="resultadoDNI" class="mt-6 pt-4 border-t border-gray-200 min-h-[150px] overflow-auto">
+                <div id="resultadoDNI" class="mt-6 pt-4 border-t border-gray-200 min-h-[220px] overflow-auto">
                     <p class="text-gray-500 text-center">Los resultados aparecerán aquí.</p>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                         Consultar RUC <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
                 </div>
-                <div id="resultadoRUC" class="mt-6 pt-4 border-t border-gray-200 min-h-[150px] overflow-auto">
+                <div id="resultadoRUC" class="mt-6 pt-4 border-t border-gray-200 min-h-[220px] overflow-auto">
                      <p class="text-gray-500 text-center">Los resultados aparecerán aquí.</p>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                         Consultar Comisiones <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
                 </div>
-                <div id="resultadoAFP" class="mt-6 pt-4 border-t border-gray-200 min-h-[150px] overflow-auto">
+                <div id="resultadoAFP" class="mt-6 pt-4 border-t border-gray-200 min-h-[220px] overflow-auto">
                      <p class="text-gray-500 text-center">Los resultados aparecerán aquí.</p>
                 </div>
             </div>
@@ -135,16 +135,22 @@
                         resultadoDiv.innerHTML = `
                             <div class="result-item"><span class="result-label">Nombre:</span><span class="result-value">${info.full_name || ''}</span></div>
                             <div class="result-item"><span class="result-label">DNI:</span><span class="result-value">${info.number || ''}</span></div>
-                            <div class="result-item"><span class="result-label">Nacimiento:</span><span class="result-value">${info.date_of_birth || 'No disp.'}</span></div>
                             <div class="result-item"><span class="result-label">Dirección:</span><span class="result-value">${info.address || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Distrito:</span><span class="result-value">${info.district || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Provincia:</span><span class="result-value">${info.province || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Departamento:</span><span class="result-value">${info.department || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Ubigeo:</span><span class="result-value">${info.ubigeo || 'No disponible'}</span></div>
                         `;
                     } else if (tipoDoc === 'ruc') {
                          resultadoDiv.innerHTML = `
                             <div class="result-item"><span class="result-label">Razón Social:</span><span class="result-value">${info.name || ''}</span></div>
                             <div class="result-item"><span class="result-label">RUC:</span><span class="result-value">${info.number || ''}</span></div>
                             <div class="result-item"><span class="result-label">Estado:</span><span class="result-value font-semibold ${info.status === 'ACTIVO' ? 'text-green-600' : 'text-red-600'}">${info.status || ''}</span></div>
-                            <div class="result-item"><span class="result-label">Condición:</span><span class="result-value font-semibold ${info.domicile_conditions === 'HABIDO' ? 'text-green-600' : 'text-red-600'}">${info.domicile_conditions || ''}</span></div>
                             <div class="result-item"><span class="result-label">Dirección:</span><span class="result-value">${info.address || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Distrito:</span><span class="result-value">${info.district || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Provincia:</span><span class="result-value">${info.province || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Departamento:</span><span class="result-value">${info.department || 'No disponible'}</span></div>
+                            <div class="result-item"><span class="result-label">Ubigeo:</span><span class="result-value">${info.ubigeo || 'No disponible'}</span></div>
                         `;
                     }
                 } else {
