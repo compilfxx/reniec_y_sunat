@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de DNI, RUC y AFP</title>
+    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Usamos la fuente Inter para todo el cuerpo */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilo para el spinner de carga */
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Estilos para la tabla de resultados de AFP */
+        .afp-table th, .afp-table td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Plataforma de Consultas Perú</h1>
+            <p class="text-gray-600 mt-2">Ingresa los datos requeridos para obtener la información.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Sección para Consulta de DNI -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Consulta por DNI</h2>
+                <div class="space-y-4">
+                    <input type="text" id="dniInput" placeholder="Ingresa 8 dígitos de DNI" maxlength="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="consultarDNI" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">
+                        Consultar DNI
+                    </button>
+                </div>
+                <div id="resultadoDNI" class="mt-6 p-4 bg-gray-50 rounded-lg min-h-[150px] overflow-auto">
+                    <p class="text-gray-500">Los resultados de la consulta aparecerán aquí.</p>
+                </div>
+            </div>
+
+            <!-- Sección para Consulta de RUC -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Consulta por RUC</h2>
+                <div class="space-y-4">
+                    <input type="text" id="rucInput" placeholder="Ingresa 11 dígitos de RUC" maxlength="11" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <button id="consultarRUC" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300">
+                        Consultar RUC
+                    </button>
+                </div>
+                <div id="resultadoRUC" class="mt-6 p-4 bg-gray-50 rounded-lg min-h-[150px] overflow-auto">
+                     <p class="text-gray-500">Los resultados de la consulta aparecerán aquí.</p>
+                </div>
+            </div>
+            
+            <!-- Sección para Consulta de Comisiones AFP -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Comisiones AFP</h2>
+                <div class="space-y-4">
+                    <input type="month" id="afpPeriodoInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button id="consultarAFP" class="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition duration-300">
+                        Consultar Comisiones
+                    </button>
+                </div>
+                <div id="resultadoAFP" class="mt-6 p-4 bg-gray-50 rounded-lg min-h-[150px] overflow-auto">
+                     <p class="text-gray-500">Los resultados de la consulta aparecerán aquí.</p>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Spinner de carga (inicialmente oculto) -->
+        <div id="loader" class="hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- REFERENCIAS A ELEMENTOS DEL DOM ---
+        const dniInput = document.getElementById('dniInput');
+        const consultarDNIBtn = document.getElementById('consultarDNI');
+        const resultadoDNIDiv = document.getElementById('resultadoDNI');
+
+        const rucInput = document.getElementById('rucInput');
+        const consultarRUCBtn = document.getElementById('consultarRUC');
+        const resultadoRUCDiv = document.getElementById('resultadoRUC');
+        
+        const afpPeriodoInput = document.getElementById('afpPeriodoInput');
+        const consultarAFPBtn = document.getElementById('consultarAFP');
+        const resultadoAFPDiv = document.getElementById('resultadoAFP');
+        
+        const loader = document.getElementById('loader');
+        
+        // --- CONFIGURACIÓN GLOBAL DE API ---
+        const apiToken = 'tu_token_aqui'; // <-- REEMPLAZA CON TU TOKEN REAL PARA TODAS LAS CONSULTAS
+
+        // --- LÓGICA PARA CONSULTA DE DNI Y RUC---
+        async function consultarDocumento(tipoDoc, numeroDoc, resultadoDiv) {
+            loader.classList.remove('hidden');
+            resultadoDiv.innerHTML = '<p class="text-gray-500">Consultando...</p>';
+
+            try {
+                const apiURL = 'https://api.consultasperu.com/api/v1/query';
+                const requestBody = { token: apiToken, type_document: tipoDoc, document_number: numeroDoc };
+                const response = await fetch(apiURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const info = data.data;
+                    if (tipoDoc === 'dni') {
+                        resultadoDiv.innerHTML = `
+                            <h3 class="font-bold text-lg">${info.full_name || ''}</h3>
+                            <p><strong>DNI:</strong> ${info.number || ''}</p>
+                            <p><strong>Nacimiento:</strong> ${info.date_of_birth || 'No disp.'}</p>
+                            <p><strong>Dirección:</strong> ${info.address || 'No disponible'}</p>
+                            <p><strong>Ubigeo:</strong> ${info.ubigeo || 'No disponible'}</p>
+                        `;
+                    } else if (tipoDoc === 'ruc') {
+                         resultadoDiv.innerHTML = `
+                            <h3 class="font-bold text-lg">${info.name || ''}</h3>
+                            <p><strong>RUC:</strong> ${info.number || ''}</p>
+                            <p><strong>Estado:</strong> <span class="font-semibold ${info.status === 'ACTIVO' ? 'text-green-600' : 'text-red-600'}">${info.status || ''}</span></p>
+                            <p><strong>Condición:</strong> <span class="font-semibold ${info.domicile_conditions === 'HABIDO' ? 'text-green-600' : 'text-red-600'}">${info.domicile_conditions || ''}</span></p>
+                            <p><strong>Dirección:</strong> ${info.address || 'No disponible'}</p>
+                        `;
+                    }
+                } else {
+                    throw new Error(data.message || 'La consulta no tuvo éxito.');
+                }
+            } catch (error) {
+                console.error(`Error en la consulta ${tipoDoc.toUpperCase()}:`, error);
+                resultadoDiv.innerHTML = `<p class="text-red-500"><b>Error:</b> ${error.message}</p>`;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        consultarDNIBtn.addEventListener('click', () => {
+            const dni = dniInput.value.trim();
+            if (dni.length !== 8 || !/^\d+$/.test(dni)) {
+                resultadoDNIDiv.innerHTML = `<p class="text-red-500">Por favor, ingresa un DNI válido de 8 dígitos.</p>`;
+                return;
+            }
+            consultarDocumento('dni', dni, resultadoDNIDiv);
+        });
+
+        consultarRUCBtn.addEventListener('click', () => {
+            const ruc = rucInput.value.trim();
+            if (ruc.length !== 11 || !/^\d+$/.test(ruc)) {
+                resultadoRUCDiv.innerHTML = `<p class="text-red-500">Por favor, ingresa un RUC válido de 11 dígitos.</p>`;
+                return;
+            }
+            consultarDocumento('ruc', ruc, resultadoRUCDiv);
+        });
+
+        // --- LÓGICA PARA CONSULTA DE AFP (ACTUALIZADA) ---
+        consultarAFPBtn.addEventListener('click', async () => {
+            const periodo = afpPeriodoInput.value;
+            if (!periodo) {
+                resultadoAFPDiv.innerHTML = `<p class="text-red-500">Por favor, selecciona un período.</p>`;
+                return;
+            }
+
+            loader.classList.remove('hidden');
+            resultadoAFPDiv.innerHTML = '<p class="text-gray-500">Consultando...</p>';
+
+            try {
+                const apiURL_AFP = 'https://api.consultasperu.com/api/v1/query/comisiones-afp';
+                const requestBody = { token: apiToken, periodo: periodo };
+                const response = await fetch(apiURL_AFP, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                const data = await response.json();
+
+                if (data.success && Array.isArray(data.data)) {
+                    let tablaHTML = `<table class="w-full text-sm afp-table"><thead><tr class="bg-gray-200"><th class="font-bold">AFP</th><th class="font-bold">Comisión Flujo</th><th class="font-bold">Prima Seguro</th></tr></thead><tbody>`;
+                    data.data.forEach(afp => {
+                        tablaHTML += `
+                            <tr class="border-b border-gray-200">
+                                <td class="font-semibold">${afp.afp}</td>
+                                <td>${afp.comision_sobre_flujo}%</td>
+                                <td>${afp.prima_de_seguro}%</td>
+                            </tr>
+                        `;
+                    });
+                    tablaHTML += `</tbody></table>`;
+                    resultadoAFPDiv.innerHTML = tablaHTML;
+                } else {
+                    throw new Error(data.message || 'La consulta no devolvió datos válidos.');
+                }
+
+            } catch (error) {
+                console.error('Error en la consulta AFP:', error);
+                resultadoAFPDiv.innerHTML = `<p class="text-red-500"><b>Error:</b> ${error.message}</p>`;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        });
+
+        // --- INICIALIZACIÓN Y UTILIDADES ---
+        // Poner el mes y año actual en el input de AFP por defecto
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        afpPeriodoInput.value = `${year}-${month}`;
+        
+        // Permitir solo números en los inputs
+        dniInput.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
+        rucInput.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
+    </script>
+
+</body>
+</html>
